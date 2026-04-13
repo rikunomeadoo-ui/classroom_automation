@@ -1,14 +1,4 @@
 {
-    "course_id": "教室のIDをここに設定（test_api.pyの実行結果から取得）",
-    "spreadsheet_id": "スプレッドシートのIDをここに設定",
-    "grade_prefix": "2年",
-    "is_active": true,
-    "assignments": [
-        {
-            "subject": "数学",
-            "text_name": "テキスト名",
-            "extract_condition": "抽出条件を記述",
-            "is_active": true
-        }
-    ]
+    "course_id": "教室のIDをここに設定（test_api.pyを実行して確認）",
+    "is_active": true
 }

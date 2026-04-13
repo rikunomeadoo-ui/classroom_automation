@@ -5,18 +5,16 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
-# 指定するスコープ（カレンダーの読み取り、Classroomの読み書き、Driveの読み書き、Driveファイルの読み取り）
+# 使用するAPIのスコープ（カレンダーの読み取り、Classroomの投稿）
 SCOPES = [
     'https://www.googleapis.com/auth/calendar.readonly',
     'https://www.googleapis.com/auth/classroom.courses',
     'https://www.googleapis.com/auth/classroom.announcements',
-    'https://www.googleapis.com/auth/classroom.coursework.students',
-    'https://www.googleapis.com/auth/classroom.topics'
 ]
 
 def get_google_services():
     """
-    Google Calendar, Classroom, DriveのAPIサービスクライアントを返す
+    Google Calendar と Classroom の APIサービスクライアントを返す。
     初回はブラウザで認証画面が開きます。
     """
     creds = None
