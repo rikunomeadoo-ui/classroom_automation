@@ -1,290 +1,317 @@
-# 📚 授業自動通知システム セットアップガイド
+# 📚 授業自動通知システム
 
-**このシステムでできること：**
-- Googleカレンダーの授業予定を自動で読み取り、授業開始前に生徒のGoogle Classroomへ自動でMeetリンクを投稿する
+Google カレンダーの授業予定を自動で読み取り、授業開始前に生徒の Google Classroom へ **Meet リンクを自動投稿**するシステムです。
 
 ---
 
 ## 📋 目次
 
-1. [必要なもの（事前準備）](#1-必要なもの事前準備)
-2. [ステップ1：Antigravity（AI）を使えるようにする](#ステップ1antigravityaiを使えるようにする)
-3. [ステップ2：このシステムをダウンロードする（GitHub）](#ステップ2このシステムをダウンロードするgithub)
-4. [ステップ3：Pythonの環境を構築する](#ステップ3pythonの環境を構築する)
-5. [ステップ4：APIキーを取得・設定する](#ステップ4apiキーを取得設定する)
-6. [ステップ5：Google認証を行う](#ステップ5google認証を行う)
-7. [ステップ6：生徒の設定をする](#ステップ6生徒の設定をする)
-8. [ステップ7：実際に動かす](#ステップ7実際に動かす)
-9. [設定のカスタマイズ（投稿タイミング・担当者名など）](#設定のカスタマイズ)
-10. [よくあるエラーと対処法](#よくあるエラーと対処法)
-11. [Antigravityに何を任せるか](#antigravityに何を任せるか)
+1. [このシステムでできること](#1-このシステムでできること)
+2. [まず最初にやること：Antigravity を使えるようにする](#2-まず最初にやることantigravity-を使えるようにする)
+3. [このシステムをダウンロードする](#3-このシステムをダウンロードする)
+4. [Python をインストールする](#4-python-をインストールする)
+5. [必要なパッケージをインストールする](#5-必要なパッケージをインストールする)
+6. [設定ファイル（.env）を作る](#6-設定ファイルenvを作る)
+7. [Google Cloud の認証情報を取得する](#7-google-cloud-の認証情報を取得する)
+8. [初回認証を行う](#8-初回認証を行う)
+9. [生徒の設定をする](#9-生徒の設定をする)
+10. [起動する](#10-起動する)
+11. [設定のカスタマイズ早見表](#11-設定のカスタマイズ早見表)
+12. [よくあるエラーと対処法](#12-よくあるエラーと対処法)
 
 ---
 
-## 1. 必要なもの（事前準備）
+## 1. このシステムでできること
 
-- **Mac** （このガイドはMac向けです）
-- **Googleアカウント**（塾の法人アカウントが望ましい）
-- **Google Classroom** で生徒のクラスが作成済みであること
-- **Googleカレンダー** で生徒の授業予定が登録済みであること
-- **Antigravity** （AIコーディングアシスタント）※インストール手順は次のステップで説明
-
----
-
-## ステップ1：Antigravity（AI）を使えるようにする
-
-AntigravityはAIがあなたの代わりにコードを書いてくれるツールです。  
-一度設定すれば、このシステムの使い方や改造についてAIに日本語で質問できます。
-
-### 1-1. VS Code（コードエディタ）をインストールする
-
-1. [https://code.visualstudio.com](https://code.visualstudio.com) を開く
-2. 「Download for Mac」ボタンをクリック
-3. ダウンロードしたファイルをApplicationsフォルダへドラッグ＆ドロップ
-4. VS Codeを起動する
-
-### 1-2. AntigravityをVS Codeに追加する
-
-1. VS Codeの左サイドバーにある「Extensions（拡張機能）」のアイコン（4つのブロックのマーク）をクリック
-2. 検索欄に `Antigravity` と入力
-3. 表示された「Antigravity」をクリックして「Install」を押す
-4. インストール後、左サイドバーにAntigravityのアイコンが追加される
-
-### 1-3. Antigravityにログインする
-
-1. サイドバーのAntigravityアイコンをクリック
-2. 「Sign in with Google」をクリックしてGoogleアカウントでログイン
-
-> **💡 Antigravityで使うべきAIモデル**  
-> Antigravityには複数のAIモデルが選べます。このシステムのセットアップや質問には **Claude Sonnet** または **Gemini 2.5 Pro** が特におすすめです。賢くて日本語の理解も正確です。
-
+- 📅 **カレンダーから自動取得**：向こう1週間の生徒の授業予定を自動で読み取る
+- 📢 **自動投稿**：授業開始前（デフォルト1時間前）に Google Classroom へ Meet リンク付きのお知らせを投稿
+- ⚙️ **柔軟な設定**：投稿タイミング・担当者名・メッセージ内容をカスタマイズ可能
+- 🤖 **AI拡張**：Gemini AI で参考書 PDF から問題・解答を自動抽出（オプション機能）
 
 ---
 
-## ステップ2：このシステムをダウンロードする（GitHub）
+## 2. まず最初にやること：Antigravity を使えるようにする
 
-GitHubはコードを共有・管理するためのサービスです。  
-難しく考えず「コードのダウンロード場所」だと思ってください。
+> **Antigravity とは？**  
+> AI がコードや設定を代わりにやってくれるツールです。  
+> 「エラーが出た」「メッセージを変えたい」など、**日本語で話しかけるだけ**で解決してくれます。
 
-### 2-1. GitHubアカウントを作る（持っていない場合）
+### 2-1. VS Code をインストールする
 
-1. [https://github.com](https://github.com) を開く
-2. 「Sign up」をクリックしてアカウントを作成する
-3. メールアドレスとパスワードを設定する
+| OS | ダウンロード先 | インストール方法 |
+|----|--------------|----------------|
+| **Mac** | [code.visualstudio.com](https://code.visualstudio.com) →「Download for Mac」| ダウンロードしたファイルを Applications フォルダへドラッグ |
+| **Windows** | [code.visualstudio.com](https://code.visualstudio.com) →「Download for Windows」| インストーラーを実行（すべてデフォルトでOK） |
 
-### 2-2. このリポジトリをダウンロードする
+### 2-2. Antigravity をインストールする
 
-1. 共有されたGitHubのURLを開く（例：`https://github.com/xxxx/classroom_automation`）
-2. 緑色の「Code」ボタンをクリック
-3. 「Download ZIP」をクリック
-4. ダウンロードしたZIPを展開（ダブルクリック）する
-5. 展開されたフォルダを**わかりやすい場所**（Documentsフォルダなど）に移動する
+1. VS Code を起動する
+2. 左サイドバーの「Extensions（四角が4つのアイコン）」をクリック
+3. 検索欄に `Antigravity` と入力
+4. 「Antigravity」をクリックして「**Install**」を押す
+5. 左サイドバーに Antigravity のアイコンが追加される
 
-> **📌 もしくはGit（上級者向け）でCloneする場合：**
-> ```bash
-> git clone https://github.com/xxxx/classroom_automation.git
-> ```
+### 2-3. ログインする
+
+1. Antigravity のアイコンをクリック
+2. 「**Sign in with Google**」をクリック → ブラウザが開く
+3. Google アカウントでログイン
+
+### 2-4. セットアッププロンプトを貼り付ける（最重要！）
+
+このリポジトリに **`ANTIGRAVITY_PROMPT.md`** というファイルがあります。
+
+1. そのファイルを開く
+2. 「▼ ここからコピー ▼」〜「▲ ここまでコピー ▲」の間をすべてコピー
+3. Antigravity のチャット欄に貼り付ける
+4. その直後に「やりたいこと」を一言で書いて送信
+
+これで Antigravity がこのシステムのことを全部理解した状態で会話できます。
 
 ---
 
-## ステップ3：Pythonの環境を構築する
+## 3. このシステムをダウンロードする
 
-Pythonはこのシステムが動く「エンジン」です。
+### 方法 A：ZIP でダウンロード（簡単・おすすめ）
 
-### 3-1. Homebrewをインストールする（Mac必須ツール）
+1. GitHub のページ上部にある緑色の「**Code**」ボタンをクリック
+2. 「**Download ZIP**」をクリック
+3. ダウンロードした ZIP ファイルをダブルクリックで解凍
+4. 解凍されたフォルダを、わかりやすい場所（例：デスクトップ・書類フォルダ）に移動
 
-ターミナルを開いて（Spotlight検索で「ターミナル」と入力）、以下をコピー・貼り付けして実行：
+### 方法 B：Git でクローン（ターミナルが使える場合）
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+git clone https://github.com/[USERNAME]/classroom_automation.git
 ```
 
-### 3-2. Pythonをインストールする
+---
+
+## 4. Python をインストールする
+
+Python はこのシステムが動く「エンジン」です。
+
+### Mac の場合
+
+**ターミナルの開き方**：Spotlight（⌘+スペース）→「ターミナル」と入力 → Enter
 
 ```bash
+# Homebrew（Macのパッケージ管理ツール）をインストール
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Python をインストール
 brew install python3
 ```
 
-### 3-3. 仮想環境を作ってパッケージをインストールする
+確認：
+```bash
+python3 --version
+# → Python 3.xx.x と表示されればOK
+```
 
-1. ターミナルで、ダウンロードしたフォルダに移動する：
-   ```bash
-   cd /Users/あなたのユーザー名/Documents/classroom_automation
-   ```
-   （フォルダをターミナルにドラッグ＆ドロップしてもOK）
+### Windows の場合
 
-2. 仮想環境を作成：
-   ```bash
-   python3 -m venv venv
-   ```
+**コマンドプロンプトの開き方**：スタートボタン右クリック →「ターミナル」または「コマンドプロンプト」
 
-3. 仮想環境を有効化：
-   ```bash
-   source venv/bin/activate
-   ```
+1. [https://www.python.org/downloads/](https://www.python.org/downloads/) を開く
+2. 「**Download Python 3.xx.x**」をクリック
+3. インストーラーを実行
+4. ⚠️ **「Add Python to PATH」に必ずチェックを入れる**
+5. 「Install Now」をクリック
 
-4. 必要なパッケージをインストール：
-   ```bash
-   pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client python-dotenv google-genai PyMuPDF Pillow
-   ```
-
-> **💡 Antigravityに任せられること：**  
-> このステップがうまくいかない場合は、エラーメッセージをコピーしてAntigravityに  
-> 「このエラーが出ました。どうすれば直せますか？」と質問すればOKです。
+確認：
+```cmd
+python --version
+# → Python 3.xx.x と表示されればOK
+```
 
 ---
 
-## ステップ4：APIキーを取得・設定する
+## 5. 必要なパッケージをインストールする
 
-### 4-1. 設定ファイルを作る
+ダウンロードしたフォルダをターミナル（またはコマンドプロンプト）で開きます。
 
-フォルダの中にある `.env.example` ファイルをコピーして、`.env` という名前に変更します。
+**フォルダへの移動方法：**
+- Mac：ターミナルにフォルダをドラッグ＆ドロップすると自動でパスが入力される  
+- Windows：フォルダを開いてアドレスバーに `cmd` と入力して Enter
 
-**ターミナルで：**
+### Mac
+
+```bash
+# 仮想環境を作成（初回のみ）
+python3 -m venv venv
+
+# 仮想環境を有効化
+source venv/bin/activate
+
+# パッケージをインストール
+pip install google-auth google-auth-oauthlib google-auth-httplib2 \
+            google-api-python-client python-dotenv google-genai PyMuPDF Pillow
+```
+
+### Windows
+
+```cmd
+:: 仮想環境を作成（初回のみ）
+python -m venv venv
+
+:: 仮想環境を有効化
+venv\Scripts\activate
+
+:: パッケージをインストール
+pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client python-dotenv google-genai PyMuPDF Pillow
+```
+
+> 💡 **エラーが出たら：** エラーをコピーして Antigravity に貼り付け「どうすればいいですか？」と聞けば OK
+
+---
+
+## 6. 設定ファイル（.env）を作る
+
+`.env.example` をコピーして `.env` を作ります。
+
+### Mac
 ```bash
 cp .env.example .env
 ```
 
-または、Finderで `.env.example` を右クリック→「複製」→ファイル名を `.env` に変更。
+### Windows
+```cmd
+copy .env.example .env
+```
 
-> ⚠️ **`.env` ファイルは絶対に人に共有しないでください。**  
-> APIキーなどの秘密情報が入ります。
+作成した `.env` ファイルをテキストエディタで開いて、各項目を埋めていきます。
 
-### 4-2. Gemini APIキーを取得する
+### 各設定項目の取得方法
 
-GeminiはGoogleのAIです。参考書のPDF解析に使います（無料枠あり）。
-
+#### `GEMINI_API_KEY`（Gemini APIキー）
 1. [https://aistudio.google.com](https://aistudio.google.com) を開く
-2. 右上の「Get API key」をクリック
-3. 「Create API key」をクリック
-4. 表示されたAPIキーをコピー
-5. `.env` ファイルを開いて、`GEMINI_API_KEY=` の後に貼り付ける：
-   ```
-   GEMINI_API_KEY="AIzaSy...（取得したキー）"
-   ```
+2. 「**Get API key**」→「**Create API key**」をクリック
+3. 表示されたキーをコピーして貼り付ける
 
-### 4-3. Google Cloud Projectを作成してOAuth認証情報を取得する
+#### `TARGET_CALENDAR_ID`（カレンダーID）
+1. [https://calendar.google.com](https://calendar.google.com) を開く
+2. 左サイドバーの対象カレンダーの「⋮」→「設定と共有」
+3. 下にスクロール→「**カレンダーの統合**」欄の「カレンダーID」をコピー
 
-Googleカレンダー・Classroomと連携するための許可証です。
+#### `MEET_URL`（Google MeetのURL）
+1. [https://meet.google.com](https://meet.google.com) を開く
+2. 「新しいミーティング」→「**後で使用するミーティングを作成**」
+3. 表示された URL をコピー
+
+#### `TEACHER_NAME`（担当者名）
+Classroom に投稿されるメッセージに使われる名前を入力します。  
+例：`TEACHER_NAME="山田 花子"`
+
+#### `NOTIFY_MINUTES_BEFORE`（投稿タイミング）
+授業開始の何分前に投稿するかを数字で入力します。  
+例：`NOTIFY_MINUTES_BEFORE=60`（1時間前）、`NOTIFY_MINUTES_BEFORE=30`（30分前）
+
+---
+
+## 7. Google Cloud の認証情報を取得する
+
+Googleカレンダー・Classroomにアクセスする「許可証」を作ります。
 
 1. [https://console.cloud.google.com](https://console.cloud.google.com) を開く
-2. 上部の「プロジェクト選択」→「新しいプロジェクト」で好きな名前（例：`juku-automation`）で作成
-3. 左メニューから「APIとサービス」→「ライブラリ」を開く
-4. 以下のAPIを1つずつ検索して「有効にする」：
+2. 上部「プロジェクト選択」→「**新しいプロジェクト**」→ 好きな名前で作成（例：`juku-automation`）
+3. 左メニュー「**APIとサービス**」→「**ライブラリ**」
+4. 以下を1つずつ検索して「**有効にする**」：
    - `Google Calendar API`
    - `Google Classroom API`
    - `Google Drive API`
-5. 「APIとサービス」→「OAuth 同意画面」を開く
-   - User Type：「外部」を選択→「作成」
-   - アプリ名（例：塾自動化）・メールアドレスを入力→「保存して次へ」を押し続ける
-   - 「テストユーザー」に自分のGoogleアドレスを追加する
-6. 「APIとサービス」→「認証情報」を開く
-7. 「認証情報を作成」→「OAuthクライアントID」をクリック
-8. アプリケーションの種類：「デスクトップアプリ」を選択→「作成」
-9. 「JSONをダウンロード」をクリック
-10. ダウンロードしたファイルを `classroom_automation` フォルダに移動し、**`credentials.json`** という名前に変更する
-
-### 4-4. カレンダーIDを設定する
-
-1. [https://calendar.google.com](https://calendar.google.com) を開く
-2. 左サイドバーの対象カレンダーの「⋮」→「設定と共有」をクリック
-3. 下にスクロールして「カレンダーの統合」欄にある**「カレンダーID」**をコピー
-4. `.env` ファイルの `TARGET_CALENDAR_ID=` の後に貼り付ける
-
-### 4-5. Google Meet URLを設定する
-
-1. [https://meet.google.com](https://meet.google.com) で「新しいミーティング」→「後で使用するミーティングを作成」
-2. 表示されたURLをコピー
-3. `.env` ファイルの `MEET_URL=` の後に貼り付ける
+5. 「**APIとサービス**」→「**OAuth 同意画面**」
+   - User Type：「**外部**」→「作成」
+   - アプリ名（例：塾自動化）とメールを入力→「保存して次へ」を繰り返す
+   - 「**テストユーザー**」に自分の Google アドレスを追加
+6. 「**APIとサービス**」→「**認証情報**」→「**認証情報を作成**」→「**OAuthクライアントID**」
+7. アプリケーションの種類：「**デスクトップアプリ**」→「作成」
+8. 「**JSONをダウンロード**」をクリック
+9. ダウンロードしたファイルを `classroom_automation` フォルダに移動して **`credentials.json`** に名前変更
 
 ---
 
-## ステップ5：Google認証を行う
+## 8. 初回認証を行う
 
-初回だけ必要な手順です。
+初回だけ必要な手順です。ブラウザが自動で開きます。
 
+### Mac
 ```bash
-# フォルダに移動して仮想環境を有効化
-cd /Users/あなたのユーザー名/Documents/classroom_automation
 source venv/bin/activate
-
-# 認証を実行
 python3 auth.py
 ```
 
-ブラウザが自動で開いてGoogleのログイン画面が表示されます：
+### Windows
+```cmd
+venv\Scripts\activate
+python auth.py
+```
 
-1. 塾のGoogleアカウントでログイン
-2. 「このアプリは確認されていません」という警告が出たら「詳細」→「安全でないページへ移動」をクリック  
+**ブラウザで：**
+1. 塾の Google アカウントでログイン
+2. 「このアプリは確認されていません」→「詳細」→「（アプリ名）に移動」をクリック  
    ※自分で作ったアプリなので安全です
-3. 要求されている権限を確認して「許可」をクリック
+3. 「**許可**」をクリック
 
-認証が成功すると `token.json` というファイルが自動で生成されます。  
-これで次回以降は自動でログインされます。
+成功すると `token.json` が自動生成されます。次回以降は自動ログインされます。
 
 ---
 
-## ステップ6：生徒の設定をする
+## 9. 生徒の設定をする
 
-`students/` フォルダの中に、**生徒の名前のフォルダ**を作成します。  
-フォルダの名前と、Googleカレンダーの授業予定タイトルに含まれる生徒名が一致している必要があります。
+`students/` フォルダに生徒ごとのフォルダを作り、`settings.json` を置きます。
 
-### 6-1. 生徒フォルダを作成する
+> ⚠️ **フォルダ名 = Googleカレンダーの予定タイトルに含まれる名前**  
+> 例：予定タイトルが「田中 太郎 授業」なら、フォルダ名を `田中 太郎` にする
 
-例：「田中 太郎」という生徒の場合
+### 手順
 
+1. `students/サンプル生徒/` フォルダをコピーして生徒名に変更
+2. 中の `settings.json` を開いて `course_id` を書き換える
+
+### `course_id` の調べ方
+
+**Mac**  
+```bash
+source venv/bin/activate
+python3 test_api.py
 ```
-students/
-  田中 太郎/
-    settings.json
+
+**Windows**  
+```cmd
+venv\Scripts\activate
+python test_api.py
 ```
 
-### 6-2. settings.jsonを作成する
+Classroom にあるコース一覧と ID が表示されます。対応する ID をコピーしてください。
 
-`students/サンプル生徒/settings.json` を参考に、生徒ごとのフォルダに `settings.json` を作成します：
+### settings.json の中身
 
 ```json
 {
-    "course_id": "ここにClassroomのコースIDを入れる",
+    "course_id": "ここに上で調べたIDを貼り付け",
     "grade_prefix": "2年",
     "is_active": true
 }
 ```
 
-**`course_id` の調べ方：**
-
-```bash
-python3 test_api.py
-```
-
-を実行すると、Classroom上のコース一覧とIDが表示されます。対応するIDをコピーしてください。
-
-### 6-3. 生徒を一時的に無効化する場合
-
-`"is_active": false` に変更すると、その生徒への自動投稿がスキップされます。
+`"is_active": false` にすると、その生徒への投稿を一時停止できます。
 
 ---
 
-## ステップ7：実際に動かす
+## 10. 起動する
 
-設定が完了したら、システムを起動します。
+### Mac：`システムの起動.command` をダブルクリック
 
-**方法①：ダブルクリックで起動（最も簡単）**
+初回はセキュリティ確認が出ます：  
+`システムの起動.command` を**右クリック**→「**開く**」→「**開く**」をクリック
 
-`システムの起動.command` ファイルをダブルクリックすると自動で動きます。
+### Windows：`システムの起動.bat` をダブルクリック
 
-初回はMacのセキュリティ確認が出る場合があります：
-- Finder で `システムの起動.command` を右クリック→「開く」→「開く」をクリック
+初回は自動でパッケージのインストールも行います（少し時間がかかります）。
 
-**方法②：ターミナルから起動**
+### 正常に動いている場合の表示例
 
-```bash
-cd /Users/あなたのユーザー名/Documents/classroom_automation
-source venv/bin/activate
-python3 main.py
-```
-
-**正常に動いている場合の表示例：**
 ```
 === Classroom Meetリンク自動予約システム ===
 ✅ Google APIの認証に成功しました。
@@ -292,7 +319,6 @@ python3 main.py
 👨‍🎓 生徒: 田中 太郎 の処理を開始します。
 
 📅 授業日時: 2026-04-15 18:00
-
 🏫 Classroomへ予約投稿を設定中...
   - お知らせ（Meetリンク込み）を 17:00 に予約しました
 
@@ -301,76 +327,44 @@ python3 main.py
 
 ---
 
-## 設定のカスタマイズ
+## 11. 設定のカスタマイズ早見表
 
-`.env` ファイルを編集することで、動作をカスタマイズできます。
+`.env` ファイルを編集するだけでカスタマイズできます。
 
-| 設定項目 | 変数名 | 例 | 説明 |
-|---------|--------|-----|------|
-| 担当者名 | `TEACHER_NAME` | `"山田 花子"` | Classroomに投稿されるメッセージの担当者名 |
-| 通知タイミング | `NOTIFY_MINUTES_BEFORE` | `60` | 授業開始の何分前に投稿するか（60=1時間前） |
-| Meet URL | `MEET_URL` | `"https://meet.google.com/..."` | 使用するGoogle MeetのURL |
-| カレンダーID | `TARGET_CALENDAR_ID` | `"xxxx@group.calendar.google.com"` | 授業予定が入っているカレンダーのID |
-
-**例：授業30分前に通知したい場合**
-
-`.env` ファイルを開いて：
-```
-NOTIFY_MINUTES_BEFORE=30
-```
+| やりたいこと | 設定する変数 | 例 |
+|------------|------------|-----|
+| 投稿者名を変える | `TEACHER_NAME` | `"山田 花子"` |
+| 投稿を30分前にする | `NOTIFY_MINUTES_BEFORE` | `30` |
+| 投稿を2時間前にする | `NOTIFY_MINUTES_BEFORE` | `120` |
+| Meetリンクを変える | `MEET_URL` | `"https://meet.google.com/xxx-xxxx-xxx"` |
+| メッセージ文面を変える | → Antigravity に「メッセージを〇〇に変えて」と言う | - |
 
 ---
 
-## よくあるエラーと対処法
+## 12. よくあるエラーと対処法
 
 **❌ `ModuleNotFoundError: No module named 'xxx'`**  
-→ パッケージが足りていません。以下を実行：
-```bash
-pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client python-dotenv google-genai PyMuPDF Pillow
-```
+→ パッケージが足りていません  
+→ Mac: `pip install ...` / Windows: `pip install ...`（ステップ5参照）
 
 **❌ `FileNotFoundError: credentials.json`**  
-→ Google Cloudからダウンロードした認証情報ファイルが正しい場所にありません。  
-`classroom_automation` フォルダ直下に `credentials.json` という名前で置いてください。
+→ Google Cloud からダウンロードしたファイルが正しい場所にありません  
+→ `classroom_automation` フォルダ直下に `credentials.json` という名前で置く
 
-**❌ `❌ .envの設定が不足しています`**  
-→ `.env` ファイルが作成されていないか、`TARGET_CALENDAR_ID` が設定されていません。  
-ステップ4の手順を確認してください。
+**❌ `.envの設定が不足しています`**  
+→ `.env` ファイルが作られていないか、`TARGET_CALENDAR_ID` が未設定です  
+→ ステップ6を確認する
 
-**❌ ブラウザで認証画面が開かない**  
-→ ターミナルで `python3 auth.py` を直接実行してみてください。
+**❌ 認証ブラウザが開かない**  
+→ Mac: `python3 auth.py` / Windows: `python auth.py` を直接実行
 
 **❌ `向こう1週間の授業予定が見つかりませんでした`**  
-→ Googleカレンダーの予定タイトルに生徒のフォルダ名が含まれているか確認してください。  
-例：フォルダ名が `田中 太郎` なら、予定タイトルは `田中 太郎 授業` のようにしてください。
+→ カレンダーの予定タイトルに生徒のフォルダ名が含まれているか確認  
+→ フォルダ名：`田中 太郎` / 予定タイトル：`田中 太郎 授業` ← OK
+
+> 💡 **どんなエラーも Antigravity に貼り付ければ解決策を教えてくれます。**  
+> `ANTIGRAVITY_PROMPT.md` を最初に貼り付けるのを忘れずに！
 
 ---
 
-## Antigravityに何を任せるか
-
-このシステムはAntigravityと一緒に使うことを想定しています。  
-以下のことはAntigravityに任せてしまいましょう（日本語でOK）：
-
-✅ **任せてOK**
-- エラーが出たときの解決（エラーをコピペして「これどういう意味？」と聞く）
-- 新しい機能の追加（例：「LINEにも通知を送りたい」）
-- メッセージ文面の変更
-- 生徒設定の追加方法の確認
-- コードの意味の説明
-
-❌ **Antigravityに見せてはいけないもの**
-- `.env` ファイルの内容（APIキーが含まれる）
-- `credentials.json`（本物のOAuthシークレット）
-- `token.json`（ログイン情報）
-
----
-
-## 📞 困ったときは
-
-1. エラーメッセージをAntigravityにコピペして相談
-2. このREADMEの「よくあるエラー」を確認
-3. Googleの各サービスのヘルプページを確認
-
----
-
-*このシステムはPython + Google APIs + Gemini APIで構築されています。*
+*Python + Google APIs + Gemini API で構築*
