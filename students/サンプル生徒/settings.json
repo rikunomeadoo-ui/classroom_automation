@@ -1,0 +1,5 @@
+{
+    "course_id": "ここにGoogle ClassroomのコースIDを設定（test_api.pyを実行して確認）",
+    "grade_prefix": "1年",
+    "is_active": true
+}

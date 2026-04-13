@@ -1,0 +1,69 @@
+\documentclass[uplatex, dvipdfmx, a4paper, 11pt]{jlreq}
+\usepackage{amsmath, amssymb, mathrsfs}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage[most]{tcolorbox}
+\usepackage[top=20truemm,bottom=20truemm,left=20truemm,right=20truemm]{geometry}
+
+\definecolor{probblue}{RGB}{74,129,183}
+\definecolor{ansgreen}{RGB}{43,116,69}
+
+% 右側に解説を入れる2カラムの数式環境
+\newenvironment{mathexplain}{
+    \par\vspace{1em}\noindent
+    \tabularx{\linewidth}{@{} >{\raggedleft\arraybackslash}X !{\color{gray!50}\vrule width 1pt} >{\raggedright\arraybackslash\sffamily\small\color{gray!80!black}}p{0.45\linewidth} @{}}
+}{
+    \endtabularx\par\vspace{1em}
+}
+\newcommand{\step}[2]{
+    #1 & \hspace{1em} #2 \\[1ex]
+}
+
+% スタイリッシュな問題用ボックスの定義
+\newtcolorbox{problembox}{
+    enhanced,
+    boxrule=0pt,
+    frame hidden,
+    colback=gray!5,
+    sharp corners,
+    borderline west={4pt}{0pt}{probblue},
+    before skip=10pt,
+    after skip=10pt,
+    left=10pt,
+    top=5pt,
+    bottom=5pt,
+    breakable
+}
+
+% 解答用ボックス
+\newtcolorbox{answerbox}{
+    enhanced,
+    boxrule=0pt,
+    frame hidden,
+    colback=white,
+    sharp corners,
+    borderline west={4pt}{0pt}{ansgreen},
+    before skip=10pt,
+    after skip=10pt,
+    left=10pt,
+    top=5pt,
+    bottom=5pt,
+    breakable
+}
+
+% ページ番号を消す（テストなど1枚のプリント向け）
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{center}
+{\sffamily\LARGE \textbf{課題確認テスト}}
+\vspace{1.5em}
+\end{center}
+
+%---CONTENTS---%
+
+\end{document}

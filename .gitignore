@@ -1,0 +1,41 @@
+# === 絶対にGitHubにあげてはいけないファイル ===
+
+# Google OAuth認証情報（本物のクライアントIDとシークレットが含まれる）
+credentials.json
+
+# Google認証トークン（ログイン情報が含まれる）
+token.json
+
+# 環境変数ファイル（APIキーが含まれる）
+.env
+
+# === 生徒の個人情報 ===
+# studentsフォルダ内の実際の生徒フォルダは共有しない
+# （template_settings.json とサンプルフォルダのみ共有）
+students/*/
+!students/サンプル生徒/
+!students/template_settings.json
+
+# === 自動生成ファイル（共有不要） ===
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# === 一時ファイル・ログ ===
+*.log
+traceback_log.txt
+err.txt
+error.log
+output.txt
+result.txt
+courses.txt
+temp_worksheet.*
+
+# === 参考書PDF（容量大・著作権） ===
+参考書/
+*.pdf
+
+# === macOS固有ファイル ===
+.DS_Store
