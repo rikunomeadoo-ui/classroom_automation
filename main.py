@@ -30,10 +30,19 @@ def find_student_events_for_week(calendar_service, calendar_id, student_name):
     
     events = events_result.get('items', [])
     start_times = []
+    
+    # 振り替えなど、授業がないことを示すキーワード（全角・半角）
+    furi_markers = ['(フリ)', '（フリ）', '(ふり)', '（ふり）', '(振)', '（振）']
+    
     for event in events:
         summary = event.get('summary', '')
         # 予定タイトルと生徒名のスペースを除外して比較
         summary_clean = summary.replace(' ', '').replace('　', '')
+        
+        # 振り替えの予定はスキップ
+        if any(marker in summary_clean for marker in furi_markers):
+            continue
+            
         student_name_clean = student_name.replace(' ', '').replace('　', '')
         if student_name_clean in summary_clean:
             start_str = event['start'].get('dateTime', event['start'].get('date'))
